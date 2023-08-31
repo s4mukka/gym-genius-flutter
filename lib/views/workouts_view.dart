@@ -1,7 +1,10 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gymgenius/repositories/workout_repository.dart';
 import 'package:gymgenius/utils/colors.dart';
+import 'package:gymgenius/views/new_workout.dart';
+import 'package:gymgenius/views/show_workout.dart';
 
 class WorkoutsView extends StatefulWidget {
   const WorkoutsView({super.key});
@@ -11,7 +14,20 @@ class WorkoutsView extends StatefulWidget {
 }
 
 class _WorkoutsViewState extends State<WorkoutsView> {
-  final List<String> workouts = [];
+  List<Workout> workouts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWorkouts();
+  }
+
+  void _fetchWorkouts() async {
+    List<Workout> newWorkouts = await const WorkoutRepository().listWorkouts();
+    setState(() {
+      workouts = newWorkouts;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +37,19 @@ class _WorkoutsViewState extends State<WorkoutsView> {
         child: Column(
             children: [
               Column(
-                children: workouts.map((string) {
+                children: workouts.map((workout) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: SizedBox(
                       width: double.infinity,
                       child: TextButton(
-                        onPressed: (){},
-                        child: Text(string),
+                        onPressed: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ShowWorkoutView(workoutName: workout.workoutName)),
+                          );
+                        },
+                        child: Text(workout.workoutName),
                       ),
                     ),
                   );
@@ -44,18 +65,16 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                   child: SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                      onPressed: (){
-                        setState(() {
-                          workouts.add('teste');
-                        });
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NewWorkoutView()),
+                        );
+                        _fetchWorkouts();
                       },
                       style: TextButton.styleFrom(
                         foregroundColor: blue,
                         backgroundColor: Colors.transparent,
-                        // backgroundColor: MaterialStateProperty.all(Colors.transparent),
-                        // textStyle: MaterialStateProperty.all(
-                        //   const TextStyle(fontSize: 20, color: blue)
-                        // )
                       ),
                       child: const Text('Adicionar Treino'),
                     )

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gymgenius/repositories/user_repository.dart';
 import 'package:gymgenius/utils/colors.dart';
+import 'package:gymgenius/views/create_account_view.dart';
 import 'package:gymgenius/views/workouts_view.dart';
 // import 'package:nubank/views/home/widgets/header_widget.dart';
 // import 'package:nubank/views/home/widgets/account_widget.dart';
@@ -56,14 +58,23 @@ class _HomeViewState extends State<HomeView> {
                       String username = _usernameController.text;
                       String password = _passwordController.text;
                       // Aqui você pode fazer alguma ação com os dados inseridos
-                      if (username == 'gym' && password == 'gym') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const WorkoutsView()),
-                        );
-                      }
+                      User user = User(username: username, password: password);
+
+                      const UserRepository().login(context, user);
                     },
                   )
+                )
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: InkWell(
+                  child: const Text('Criar conta', style: TextStyle(color: blueDark, fontSize: 16),),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CreateAccountView()),
+                    );
+                  },
                 )
               )
             ],
